@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive IT Responsibility Matrix (Editable)</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js for the bubble chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    
+    <!-- Chart.js Datalabels Plugin for showing labels on the chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.1.0"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom styles for the app */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* bg-gray-900 */
+            color: #f3f4f6; /* text-gray-200 */
+        }
+        /* Add a pointer cursor to the canvas when hovering over bubbles */
+        #responsibilityChart.clickable {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div class="w-full max-w-screen-2xl mx-auto">
+            
+            <!-- Header -->
+            <header class="text-center mb-8">
+                <h1 class="text-3xl sm:text-4xl font-bold text-white tracking-tight">IT Responsibility Matrix</h1>
+                <p class="mt-2 text-lg text-gray-400">Visualize tasks by complexity, impact, and effort. Click a bubble to edit.</p>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                
+                <!-- Chart Section (Now larger) -->
+                <div class="lg:col-span-3 bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-2xl border border-gray-700">
+                    <div class="relative h-[70vh]">
+                        <!-- Quadrant Backgrounds -->
+                        <div class="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-2 p-10 sm:p-12 md:p-14 pointer-events-none">
+                            <div class="flex items-end justify-start p-2 rounded-lg bg-gray-700/30"><span class="text-xs sm:text-sm font-semibold text-gray-400">Key Operations</span></div>
+                            <div class="flex items-end justify-end p-2 rounded-lg bg-gray-700/30"><span class="text-xs sm:text-sm font-semibold text-gray-400">Strategic Projects</span></div>
+                            <div class="flex items-start justify-start p-2 rounded-lg bg-gray-700/30"><span class="text-xs sm:text-sm font-semibold text-gray-400">Daily Grind</span></div>
+                            <div class="flex items-start justify-end p-2 rounded-lg bg-gray-700/30"><span class="text-xs sm:text-sm font-semibold text-gray-400">Specialized Tasks</span></div>
+                        </div>
+                        <!-- Canvas for the chart -->
+                        <canvas id="responsibilityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Controls and Task Form Section -->
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl border border-gray-700">
+                    <h2 id="form-title" class="text-2xl font-bold text-white mb-4">Add a New Task</h2>
+                    <form id="taskForm" class="space-y-4">
+                        <div>
+                            <label for="taskName" class="block text-sm font-medium text-gray-300">Task Name</label>
+                            <input type="text" id="taskName" name="taskName" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-white h-10 px-3">
+                        </div>
+
+                        <div>
+                            <label for="squad" class="block text-sm font-medium text-gray-300">Squad</label>
+                            <select id="squad" name="squad" class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-white h-10 px-2">
+                                <option value="helpdesk">Helpdesk</option>
+                                <option value="sysadmin">System Administrators</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="complexity" class="block text-sm font-medium text-gray-300">Complexity (<span id="complexityValue">12.5</span>)</label>
+                            <!-- UPDATED: max changed to 25 -->
+                            <input type="range" id="complexity" name="complexity" min="0" max="25" value="12.5" step="0.1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                        </div>
+
+                        <div>
+                            <label for="impact" class="block text-sm font-medium text-gray-300">Business Impact (<span id="impactValue">12.5</span>)</label>
+                            <!-- UPDATED: max changed to 25 -->
+                            <input type="range" id="impact" name="impact" min="0" max="25" value="12.5" step="0.1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                        </div>
+
+                        <div>
+                            <label for="effort" class="block text-sm font-medium text-gray-300">Effort / Time Spent (<span id="effortValue">12.5</span>)</label>
+                            <!-- UPDATED: max changed to 25 -->
+                            <input type="range" id="effort" name="effort" min="1" max="25" value="12.5" step="0.1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                        
+                        <!-- Button container for dynamic buttons -->
+                        <div id="button-container" class="pt-2 space-y-3">
+                            <button type="submit" id="add-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-800">
+                                Add Task to Chart
+                            </button>
+                            <button type="button" id="update-btn" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 hidden">Update Task</button>
+                            <button type="button" id="delete-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 hidden">Delete Task</button>
+                            <button type="button" id="cancel-btn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 hidden">Cancel</button>
+                        </div>
+                    </form>
+                    
+                    <!-- Legend -->
+                    <div class="mt-6 pt-6 border-t border-gray-700">
+                         <h3 class="text-lg font-semibold text-white">Legend</h3>
+                         <div class="mt-3 space-y-2">
+                             <div class="flex items-center">
+                                 <span class="w-4 h-4 rounded-full bg-sky-400 mr-3"></span>
+                                 <span>Helpdesk</span>
+                             </div>
+                             <div class="flex items-center">
+                                 <span class="w-4 h-4 rounded-full bg-amber-500 mr-3"></span>
+                                 <span>System Administrators</span>
+                             </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('responsibilityChart').getContext('2d');
+            Chart.register(ChartDataLabels);
+
+            let selectedBubble = null; 
+
+            const formTitle = document.getElementById('form-title');
+            const taskForm = document.getElementById('taskForm');
+            const addBtn = document.getElementById('add-btn');
+            const updateBtn = document.getElementById('update-btn');
+            const deleteBtn = document.getElementById('delete-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+
+            // --- Initial Data ---
+            const initialData = {
+                helpdesk: [
+                    { x: 3, y: 5, r: 6, label: 'Grant App Access' },
+                    { x: 4, y: 6, r: 15, label: 'Laptop Support' },
+                    { x: 3.5, y: 7, r: 12, label: 'Okta User Support' },
+                    { x: 5, y: 7, r: 18, label: 'Jamf Operations' },
+                    { x: 16, y: 14, r: 36, label: 'Network Troubleshooting' },
+                    { x: 8, y: 16, r: 48, label: 'IT Documentation' },
+                    { x: 10, y: 16, r: 42, label: 'Asset Management' },
+                    { x: 12, y: 17, r: 33, label: 'Onboarding' },
+                    { x: 13, y: 20, r: 30, label: 'Offboarding' }
+                ],
+                sysadmin: [
+                    { x: 15, y: 13, r: 30, label: 'Okta Changes' },
+                    { x: 17, y: 15, r: 39, label: 'Set up New SSO Application' },
+                    { x: 14, y: 17, r: 36, label: 'Jamf Policies' },
+                    { x: 14, y: 18, r: 45, label: 'Core App Admin' },
+                    { x: 18, y: 18, r: 48, label: 'Network Design' },
+                    { x: 17, y: 19, r: 54, label: 'Automation Development' },
+                    { x: 18, y: 20, r: 45, label: 'IT Strategy' },
+                    { x: 19, y: 20, r: 60, label: 'System Migrations' }
+                ]
+            };
+            
+            // --- Chart Configuration ---
+            const chartConfig = {
+                type: 'bubble',
+                data: {
+                    datasets: [
+                        { 
+                            label: 'Helpdesk', 
+                            data: initialData.helpdesk, 
+                            backgroundColor: 'rgba(56, 189, 248, 0.7)', 
+                            borderColor: 'rgba(14, 165, 233, 1)', 
+                            borderWidth: 2, 
+                        },
+                        { 
+                            label: 'System Administrators', 
+                            data: initialData.sysadmin, 
+                            backgroundColor: 'rgba(245, 158, 11, 0.7)', // amber-500
+                            borderColor: 'rgba(245, 158, 11, 1)',
+                            borderWidth: 2, 
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    onHover: (event, chartElement) => {
+                        event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const { datasetIndex, index } = elements[0];
+                            selectBubble(datasetIndex, index);
+                        } else {
+                            if (selectedBubble) {
+                                switchToMode('add');
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'end',
+                            offset: 8,
+                            color: '#cbd5e1',
+                            font: {
+                                size: 12,
+                                weight: '500',
+                            },
+                            formatter: (value, context) => {
+                                return value.label;
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            title: { display: true, text: 'Complexity →', color: '#9ca3af', font: { size: 16, weight: 'bold' } }, 
+                            // UPDATED: max changed to 25
+                            min: 0, 
+                            max: 25, 
+                            grid: { color: '#374151' }, 
+                            ticks: { color: '#d1d5db' } 
+                        },
+                        y: { 
+                            title: { display: true, text: 'Business Impact →', color: '#9ca3af', font: { size: 16, weight: 'bold' } }, 
+                            // UPDATED: max changed to 25
+                            min: 0, 
+                            max: 25, 
+                            grid: { color: '#374151' }, 
+                            ticks: { color: '#d1d5db' } 
+                        }
+                    }
+                }
+            };
+            
+            const responsibilityChart = new Chart(ctx, chartConfig);
+
+            // --- UI Mode Switching ---
+            function switchToMode(mode) {
+                if (mode === 'edit') {
+                    formTitle.textContent = 'Edit Task';
+                    addBtn.classList.add('hidden');
+                    updateBtn.classList.remove('hidden');
+                    deleteBtn.classList.remove('hidden');
+                    cancelBtn.classList.remove('hidden');
+                } else { // 'add' mode
+                    formTitle.textContent = 'Add a New Task';
+                    taskForm.reset();
+                    updateSliderDisplays();
+                    selectedBubble = null;
+                    addBtn.classList.remove('hidden');
+                    updateBtn.classList.add('hidden');
+                    deleteBtn.classList.add('hidden');
+                    cancelBtn.classList.add('hidden');
+                }
+            }
+
+            // --- Bubble Selection & Form Population ---
+            function selectBubble(datasetIndex, dataIndex) {
+                selectedBubble = { datasetIndex, dataIndex };
+                const bubbleData = responsibilityChart.data.datasets[datasetIndex].data[dataIndex];
+                
+                document.getElementById('taskName').value = bubbleData.label;
+                document.getElementById('squad').value = datasetIndex === 0 ? 'helpdesk' : 'sysadmin';
+                document.getElementById('complexity').value = bubbleData.x;
+                document.getElementById('impact').value = bubbleData.y;
+                document.getElementById('effort').value = bubbleData.r / 3;
+
+                updateSliderDisplays();
+                switchToMode('edit');
+            }
+
+            // --- Form Handling ---
+            taskForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newTask = getTaskFromForm();
+                const datasetIndex = document.getElementById('squad').value === 'helpdesk' ? 0 : 1;
+                responsibilityChart.data.datasets[datasetIndex].data.push(newTask);
+                responsibilityChart.update();
+                switchToMode('add');
+            });
+
+            updateBtn.addEventListener('click', () => {
+                if (!selectedBubble) return;
+                const { datasetIndex, dataIndex } = selectedBubble;
+                const updatedTask = getTaskFromForm();
+                
+                const newSquadValue = document.getElementById('squad').value;
+                const newDatasetIndex = newSquadValue === 'helpdesk' ? 0 : 1;
+
+                if (datasetIndex === newDatasetIndex) {
+                    responsibilityChart.data.datasets[datasetIndex].data[dataIndex] = updatedTask;
+                } else {
+                    responsibilityChart.data.datasets[datasetIndex].data.splice(dataIndex, 1);
+                    responsibilityChart.data.datasets[newDatasetIndex].data.push(updatedTask);
+                }
+
+                responsibilityChart.update();
+                switchToMode('add');
+            });
+
+            deleteBtn.addEventListener('click', () => {
+                if (!selectedBubble) return;
+                const { datasetIndex, dataIndex } = selectedBubble;
+                responsibilityChart.data.datasets[datasetIndex].data.splice(dataIndex, 1);
+                responsibilityChart.update();
+                switchToMode('add');
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                switchToMode('add');
+            });
+
+            function getTaskFromForm() {
+                const taskName = document.getElementById('taskName').value;
+                const complexity = parseFloat(document.getElementById('complexity').value);
+                const impact = parseFloat(document.getElementById('impact').value);
+                const effort = parseFloat(document.getElementById('effort').value);
+                const radius = effort * 3;
+                return { x: complexity, y: impact, r: radius, label: taskName };
+            }
+            
+            // --- Slider Value Display ---
+            function updateSliderDisplays() {
+                 document.getElementById('complexityValue').textContent = parseFloat(document.getElementById('complexity').value).toFixed(1);
+                 document.getElementById('impactValue').textContent = parseFloat(document.getElementById('impact').value).toFixed(1);
+                 document.getElementById('effortValue').textContent = parseFloat(document.getElementById('effort').value).toFixed(1);
+            }
+
+            const sliders = ['complexity', 'impact', 'effort'];
+            sliders.forEach(id => {
+                document.getElementById(id).addEventListener('input', updateSliderDisplays);
+            });
+            
+            // Initialize slider displays on load
+            updateSliderDisplays();
+        });
+    </script>
+</body>
+</html>

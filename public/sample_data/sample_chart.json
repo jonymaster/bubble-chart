@@ -1,0 +1,166 @@
+{
+    "bubbles": [
+      {
+        "id": "1",
+        "name": "Grant App Access",
+        "x": 9.444444444444445,
+        "y": 10.166666666666666,
+        "size": 6,
+        "group": "helpdesk"
+      },
+      {
+        "id": "2",
+        "name": "Laptop Support",
+        "x": 39.77777777777778,
+        "y": 15.833333333333334,
+        "size": 15,
+        "group": "helpdesk"
+      },
+      {
+        "id": "3",
+        "name": "Okta User Support",
+        "x": 13.055555555555555,
+        "y": 23.833333333333332,
+        "size": 12,
+        "group": "helpdesk"
+      },
+      {
+        "id": "4",
+        "name": "Jamf Operations",
+        "x": 29.444444444444443,
+        "y": 28.833333333333336,
+        "size": 18,
+        "group": "helpdesk"
+      },
+      {
+        "id": "5",
+        "name": "Network Troubleshooting",
+        "x": 30.11111111111111,
+        "y": 52.666666666666664,
+        "size": 36,
+        "group": "helpdesk"
+      },
+      {
+        "id": "6",
+        "name": "IT Documentation",
+        "x": 8.555555555555555,
+        "y": 47.833333333333336,
+        "size": 48,
+        "group": "helpdesk"
+      },
+      {
+        "id": "7",
+        "name": "Asset Management",
+        "x": 20.222222222222225,
+        "y": 40.33333333333335,
+        "size": 5,
+        "group": "helpdesk"
+      },
+      {
+        "id": "8",
+        "name": "Onboarding",
+        "x": 9.333333333333332,
+        "y": 75.16666666666667,
+        "size": 17,
+        "group": "helpdesk"
+      },
+      {
+        "id": "9",
+        "name": "Offboarding",
+        "x": 43.44444444444444,
+        "y": 59,
+        "size": 25,
+        "group": "helpdesk"
+      },
+      {
+        "id": "10",
+        "name": "Okta Changes",
+        "x": 83.66666666666666,
+        "y": 21.500000000000007,
+        "size": 30,
+        "group": "sysadmin"
+      },
+      {
+        "id": "11",
+        "name": "Set up New SSO App",
+        "x": 60.77777777777778,
+        "y": 55.5,
+        "size": 39,
+        "group": "sysadmin"
+      },
+      {
+        "id": "12",
+        "name": "Jamf Policies",
+        "x": 48.333333333333336,
+        "y": 75,
+        "size": 19,
+        "group": "sysadmin"
+      },
+      {
+        "id": "13",
+        "name": "Core App Admin",
+        "x": 52.88888888888887,
+        "y": 38,
+        "size": 27,
+        "group": "sysadmin"
+      },
+      {
+        "id": "14",
+        "name": "Network Design",
+        "x": 83.11111111111111,
+        "y": 52.33333333333333,
+        "size": 30,
+        "group": "sysadmin"
+      },
+      {
+        "id": "15",
+        "name": "Automation Development",
+        "x": 90.11111111111109,
+        "y": 83,
+        "size": 83,
+        "group": "sysadmin"
+      },
+      {
+        "id": "17",
+        "name": "System Migrations",
+        "x": 68.55555555555557,
+        "y": 75.33333333333333,
+        "size": 56,
+        "group": "sysadmin"
+      }
+    ],
+    "groups": [
+      {
+        "id": "helpdesk",
+        "name": "Helpdesk",
+        "color": "#38bdf8"
+      },
+      {
+        "id": "sysadmin",
+        "name": "System Administrators",
+        "color": "#f59e0b"
+      }
+    ],
+    "xAxis": {
+      "label": "Complexity",
+      "min": 0,
+      "max": 100
+    },
+    "yAxis": {
+      "label": "Business Impact",
+      "min": 0,
+      "max": 100
+    },
+    "quadrants": {
+      "topLeft": "Key Operations",
+      "topRight": "Strategic Projects",
+      "bottomLeft": "Daily Grind",
+      "bottomRight": "Specialized Tasks",
+      "colors": {
+        "topLeft": "rgba(99, 102, 241, 0.08)",
+        "topRight": "rgba(236, 72, 153, 0.08)",
+        "bottomLeft": "rgba(34, 197, 94, 0.08)",
+        "bottomRight": "rgba(245, 158, 11, 0.08)"
+      }
+    }
+  }
