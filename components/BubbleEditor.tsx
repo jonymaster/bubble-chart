@@ -168,7 +168,7 @@ export default function BubbleEditor({ selectedBubble, groups, onUpdate, onClose
         </div>
 
         {/* Live Preview */}
-        <div className="p-4 bg-gray-800 rounded-lg border border-gray-600">
+        <div className="p-4 bg-gray-900 rounded-lg border border-gray-600">
           <h4 className="text-sm font-semibold text-gray-300 mb-3">Live Preview:</h4>
           <div className="flex items-center gap-4">
             <div 

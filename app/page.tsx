@@ -135,7 +135,7 @@ export default function Home() {
   };
 
   const handleExportFullScreenImage = () => {
-    const chartContainer = document.querySelector('.bg-gray-800.rounded-lg.border.border-gray-600') as HTMLElement;
+    const chartContainer = document.querySelector('.bg-gray-900.rounded-lg.border.border-gray-600') as HTMLElement;
     if (chartContainer) {
       exportFullScreenChartAsImage(chartContainer, chartData.title);
     }
@@ -206,7 +206,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-black text-white">
       <div className="container">
         <header className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white tracking-tight mb-2">

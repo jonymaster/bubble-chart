@@ -60,6 +60,51 @@ export default function BubbleChart({
     const chart = svg.append('g')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
+    // Add shadow filter definition
+    const defs = svg.append('defs');
+    const filter = defs.append('filter')
+      .attr('id', 'bubble-shadow')
+      .attr('x', '-50%')
+      .attr('y', '-50%')
+      .attr('width', '200%')
+      .attr('height', '200%');
+    
+    filter.append('feDropShadow')
+      .attr('dx', '2')
+      .attr('dy', '3')
+      .attr('stdDeviation', '3')
+      .attr('flood-color', 'rgba(0, 0, 0, 0.3)');
+    
+    // Add inner shadow filter for more depth
+    const innerFilter = defs.append('filter')
+      .attr('id', 'bubble-inner-shadow')
+      .attr('x', '-50%')
+      .attr('y', '-50%')
+      .attr('width', '200%')
+      .attr('height', '200%');
+    
+    innerFilter.append('feDropShadow')
+      .attr('dx', '0')
+      .attr('dy', '0')
+      .attr('stdDeviation', '2')
+      .attr('flood-color', 'rgba(255, 255, 255, 0.1)')
+      .attr('flood-opacity', '0.3');
+    
+    // Add radial gradient for bubble depth
+    const radialGradient = defs.append('radialGradient')
+      .attr('id', 'bubble-gradient')
+      .attr('cx', '30%')
+      .attr('cy', '30%')
+      .attr('r', '70%');
+    
+    radialGradient.append('stop')
+      .attr('offset', '0%')
+      .attr('stop-color', 'rgba(255, 255, 255, 0.2)');
+    
+    radialGradient.append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', 'rgba(0, 0, 0, 0.1)');
+
     // Add quadrant backgrounds
     const quadrantWidth = chartWidth / 2;
     const quadrantHeight = chartHeight / 2;
@@ -208,15 +253,20 @@ export default function BubbleChart({
         })
         .attr('opacity', 0.7)
         .style('cursor', 'pointer')
+        .style('filter', 'url(#bubble-shadow)')
+        .style('stroke', 'rgba(255, 255, 255, 0.1)')
+        .style('stroke-width', '1')
         .on('mouseover', function() {
           d3.select(this)
             .attr('opacity', 1)
-            .attr('stroke-width', 3);
+            .attr('stroke-width', 2)
+            .style('filter', 'url(#bubble-shadow) brightness(1.1)');
         })
         .on('mouseout', function() {
           d3.select(this)
             .attr('opacity', 0.7)
-            .attr('stroke-width', 2);
+            .attr('stroke-width', 1)
+            .style('filter', 'url(#bubble-shadow)');
         });
 
       // Track drag state
@@ -237,7 +287,9 @@ export default function BubbleChart({
           startY = event.y;
           originalX = d.x;
           originalY = d.y;
-          d3.select(this).attr('opacity', 0.8);
+          d3.select(this)
+            .attr('opacity', 0.8)
+            .style('filter', 'url(#bubble-shadow) brightness(1.05)');
         })
         .on('drag', function(event, d) {
           // Check if we've moved enough to consider this a drag
@@ -292,7 +344,9 @@ export default function BubbleChart({
           }
         })
         .on('end', function(event, d) {
-          d3.select(this).attr('opacity', 0.7);
+          d3.select(this)
+            .attr('opacity', 0.7)
+            .style('filter', 'url(#bubble-shadow)');
           
           if (hasMoved && isDragging) {
             // Calculate the final mouse movement delta
@@ -355,7 +409,7 @@ export default function BubbleChart({
   }, [data, width, height, onBubbleClick]);
 
   return (
-    <div className="chart-container bg-gray-800 border border-gray-700 relative">
+            <div className="chart-container bg-gray-900 border border-gray-700 relative">
       <svg
         ref={svgRef}
         width={width}

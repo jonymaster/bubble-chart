@@ -60,6 +60,21 @@ export default function FullScreenChart({
     const chart = svg.append('g')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
+    // Add shadow filter definition
+    const defs = svg.append('defs');
+    const filter = defs.append('filter')
+      .attr('id', 'bubble-shadow-fullscreen')
+      .attr('x', '-50%')
+      .attr('y', '-50%')
+      .attr('width', '200%')
+      .attr('height', '200%');
+    
+    filter.append('feDropShadow')
+      .attr('dx', '2')
+      .attr('dy', '3')
+      .attr('stdDeviation', '3')
+      .attr('flood-color', 'rgba(0, 0, 0, 0.3)');
+
     // Add quadrant backgrounds
     const quadrantWidth = innerWidth / 2;
     const quadrantHeight = innerHeight / 2;
@@ -202,15 +217,20 @@ export default function FullScreenChart({
         })
         .attr('opacity', 0.7)
         .style('cursor', 'pointer')
+        .style('filter', 'url(#bubble-shadow-fullscreen)')
+        .style('stroke', 'rgba(255, 255, 255, 0.1)')
+        .style('stroke-width', '1')
         .on('mouseover', function() {
           d3.select(this)
             .attr('opacity', 1)
-            .attr('stroke-width', 3);
+            .attr('stroke-width', 2)
+            .style('filter', 'url(#bubble-shadow-fullscreen) brightness(1.1)');
         })
         .on('mouseout', function() {
           d3.select(this)
             .attr('opacity', 0.7)
-            .attr('stroke-width', 2);
+            .attr('stroke-width', 1)
+            .style('filter', 'url(#bubble-shadow-fullscreen)');
         });
 
       // Add drag behavior if callbacks are provided
@@ -230,7 +250,9 @@ export default function FullScreenChart({
             startY = event.y;
             originalX = d.x;
             originalY = d.y;
-            d3.select(this).attr('opacity', 0.8);
+            d3.select(this)
+              .attr('opacity', 0.8)
+              .style('filter', 'url(#bubble-shadow-fullscreen) brightness(1.05)');
           })
           .on('drag', function(event, d) {
             const deltaX = Math.abs(event.x - startX);
@@ -269,7 +291,9 @@ export default function FullScreenChart({
             }
           })
           .on('end', function(event, d) {
-            d3.select(this).attr('opacity', 0.7);
+            d3.select(this)
+              .attr('opacity', 0.7)
+              .style('filter', 'url(#bubble-shadow-fullscreen)');
             
             if (hasMoved && isDragging) {
               const deltaScreenX = event.x - startX;
@@ -321,7 +345,7 @@ export default function FullScreenChart({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-800 rounded-lg border border-gray-600 max-w-full max-h-full overflow-auto">
+              <div className="bg-gray-900 rounded-lg border border-gray-600 max-w-full max-h-full overflow-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-2xl font-bold text-white">
@@ -330,7 +354,7 @@ export default function FullScreenChart({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => {
-                  const chartContainer = document.querySelector('.bg-gray-800.rounded-lg.border.border-gray-600') as HTMLElement;
+                  const chartContainer = document.querySelector('.bg-gray-900.rounded-lg.border.border-gray-600') as HTMLElement;
                   if (chartContainer) {
                     import('../lib/imageExport').then(({ exportFullScreenChartAsImage }) => {
                       exportFullScreenChartAsImage(chartContainer, data.title);
@@ -354,7 +378,7 @@ export default function FullScreenChart({
             </div>
           </div>
           
-          <div className="bg-gray-800 border border-gray-700 rounded-lg">
+          <div className="bg-gray-900 border border-gray-700 rounded-lg">
             <svg
               ref={svgRef}
               width={chartWidth}

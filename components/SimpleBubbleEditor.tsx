@@ -65,7 +65,7 @@ export default function SimpleBubbleEditor({
   const bubbleColor = group?.color || '#6b7280';
 
   return (
-    <div className="fixed top-0 right-0 h-full w-96 bg-gray-800 border-l border-gray-600 shadow-2xl z-50 overflow-y-auto">
+            <div className="fixed top-0 right-0 h-full w-96 bg-gray-900 border-l border-gray-600 shadow-2xl z-50 overflow-y-auto">
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold text-white">

@@ -76,7 +76,7 @@ export default function SizeSlider({ selectedBubble, onUpdate, onClose }: SizeSl
         </div>
 
         {/* Preview */}
-        <div className="flex items-center gap-4 p-4 bg-gray-800 rounded-lg border border-gray-600">
+        <div className="flex items-center gap-4 p-4 bg-gray-900 rounded-lg border border-gray-600">
           <div 
             className="rounded-full border-2 border-white flex items-center justify-center text-white font-semibold text-xs"
             style={{

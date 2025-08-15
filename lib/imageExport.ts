@@ -43,21 +43,21 @@ export const exportChartAsImage = (svgElement: SVGSVGElement, title: string, for
     exportContainer.style.minWidth = 'auto';
     exportContainer.style.margin = '0';
     exportContainer.style.padding = '20px';
-    exportContainer.style.backgroundColor = '#1f2937';
-    exportContainer.style.border = '1px solid #374151';
+    exportContainer.style.backgroundColor = 'rgb(33, 33, 33)';
+    exportContainer.style.border = '1px solid rgb(75, 85, 99)';
     exportContainer.style.borderRadius = '8px';
     
     // Add to document temporarily
     document.body.appendChild(exportContainer);
     
     html2canvas.default(exportContainer, {
-      backgroundColor: '#1f2937', // bg-gray-800
+      backgroundColor: 'rgb(15, 15, 15)', // matches the new background
       scale: 2, // Higher quality
       useCORS: true,
       allowTaint: true,
       logging: false,
       onclone: (clonedDoc) => {
-        // Ensure fonts are applied to cloned document
+        // Ensure fonts and colors are applied to cloned document
         const style = clonedDoc.createElement('style');
         style.textContent = `
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -66,6 +66,19 @@ export const exportChartAsImage = (svgElement: SVGSVGElement, title: string, for
           }
           svg text {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+          }
+          .chart-container {
+            background: rgb(33, 33, 33) !important;
+            border: 1px solid rgb(75, 85, 99) !important;
+          }
+          body {
+            background: rgb(15, 15, 15) !important;
+            color: rgb(243, 244, 246) !important;
+          }
+          circle {
+            filter: drop-shadow(2px 3px 3px rgba(0, 0, 0, 0.3)) !important;
+            stroke: rgba(255, 255, 255, 0.1) !important;
+            stroke-width: 1px !important;
           }
         `;
         clonedDoc.head.appendChild(style);
@@ -116,7 +129,7 @@ export const exportFullScreenChartAsImage = (chartContainer: HTMLElement, title:
   // Use html2canvas for full-screen export
   import('html2canvas').then((html2canvas) => {
     html2canvas.default(chartContainer, {
-      backgroundColor: '#1f2937', // bg-gray-800
+      backgroundColor: 'rgb(15, 15, 15)', // matches the new background
       scale: 2, // Higher quality
       useCORS: true,
       allowTaint: true,
