@@ -2,6 +2,8 @@
 
 A simple and beautiful bubble chart creator built with Next.js and D3.js. Create interactive bubble charts with multiple dimensions and group colors, all stored locally in your browser.
 
+Demo: https://bubble-chart-silk.vercel.app/
+
 ## Features
 
 - **Interactive Bubble Charts**: Create beautiful bubble charts with D3.js
