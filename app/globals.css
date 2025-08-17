@@ -8,6 +8,41 @@
   --background-end-rgb: 25, 25, 25;
 }
 
+/* Theme-aware CSS custom properties */
+[data-theme="dark"] {
+  --background-start: rgb(15, 15, 15);
+  --background-end: rgb(25, 25, 25);
+  --tile-background: rgb(33, 33, 33);
+  --bubble-background: rgb(45, 45, 45);
+  --bubble-hover: rgb(55, 55, 55);
+  --form-background: rgb(45, 45, 45);
+  --border-color: rgb(75, 85, 99);
+  --text-color: rgb(243, 244, 246);
+  --text-secondary: rgb(156, 163, 175);
+  --text-muted: rgb(107, 114, 128);
+  --scrollbar-track: rgb(45, 45, 45);
+  --scrollbar-thumb: rgb(75, 85, 99);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --stroke-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] {
+  --background-start: rgb(248, 250, 252);
+  --background-end: rgb(241, 245, 249);
+  --tile-background: rgb(255, 255, 255);
+  --bubble-background: rgb(248, 250, 252);
+  --bubble-hover: rgb(241, 245, 249);
+  --form-background: rgb(248, 250, 252);
+  --border-color: rgb(203, 213, 225);
+  --text-color: rgb(15, 23, 42);
+  --text-secondary: rgb(71, 85, 105);
+  --text-muted: rgb(100, 116, 139);
+  --scrollbar-track: rgb(241, 245, 249);
+  --scrollbar-thumb: rgb(203, 213, 225);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --stroke-color: rgba(0, 0, 0, 0.05);
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -38,12 +73,12 @@ body {
 }
 
 .chart-container {
-  background: rgb(33, 33, 33);
+  background: var(--tile-background);
   border-radius: 16px;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   padding: 24px;
   margin: 20px 0;
-  border: 1px solid rgb(75, 85, 99);
+  border: 1px solid var(--border-color);
 }
 
 .form-group {
@@ -54,7 +89,7 @@ body {
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
-  color: rgb(209, 213, 219);
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
@@ -62,11 +97,11 @@ body {
 .form-group select {
   width: 100%;
   padding: 12px 16px;
-  border: 1px solid rgb(75, 85, 99);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 14px;
-  background-color: rgb(45, 45, 45);
-  color: rgb(243, 244, 246);
+  background-color: var(--form-background);
+  color: var(--text-color);
   transition: all 0.2s ease;
 }
 
@@ -78,7 +113,7 @@ body {
 }
 
 .form-group input[type="range"] {
-  background: rgb(45, 45, 45);
+  background: var(--form-background);
   height: 6px;
   border-radius: 3px;
   outline: none;
@@ -165,8 +200,8 @@ body {
 }
 
 .bubble-item {
-  background: rgb(45, 45, 45);
-  border: 1px solid rgb(75, 85, 99);
+  background: var(--bubble-background);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 12px;
@@ -177,7 +212,7 @@ body {
 }
 
 .bubble-item:hover {
-  background: rgb(55, 55, 55);
+  background: var(--bubble-hover);
   border-color: rgb(99, 102, 241);
 }
 
@@ -206,11 +241,11 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgb(45, 45, 45);
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgb(75, 85, 99);
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 

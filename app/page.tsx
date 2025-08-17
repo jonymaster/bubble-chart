@@ -9,8 +9,13 @@ import BubbleForm from '../components/BubbleForm';
 import GroupForm from '../components/GroupForm';
 import SimpleBubbleEditor from '../components/SimpleBubbleEditor';
 import FullScreenChart from '../components/FullScreenChart';
+import ThemeToggle from '../components/ThemeToggle';
+import { useTheme, themeColors } from '../lib/theme';
 
 export default function Home() {
+  const { theme } = useTheme();
+  const colors = themeColors[theme];
+  
   const [chartData, setChartData] = useState<ChartData>({
     title: 'Bubble Chart',
     bubbles: [],
@@ -128,16 +133,22 @@ export default function Home() {
   };
 
   const handleExportImage = () => {
-    const svgElement = document.querySelector('svg') as SVGSVGElement;
-    if (svgElement) {
-      exportChartAsImage(svgElement, chartData.title);
+    // Find the specific chart SVG within the bubble chart container
+    const chartContainer = document.querySelector('.chart-container svg') as SVGSVGElement;
+    if (chartContainer) {
+      exportChartAsImage(chartContainer, chartData.title);
+    } else {
+      alert('Chart not found. Please make sure you have bubbles added to the chart.');
     }
   };
 
   const handleExportFullScreenImage = () => {
-    const chartContainer = document.querySelector('.bg-gray-900.rounded-lg.border.border-gray-600') as HTMLElement;
+    // Find the fullscreen chart container with updated theme classes
+    const chartContainer = document.querySelector('.fixed.inset-0 .rounded-lg.border') as HTMLElement;
     if (chartContainer) {
       exportFullScreenChartAsImage(chartContainer, chartData.title);
+    } else {
+      alert('Fullscreen chart container not found.');
     }
   };
 
@@ -206,13 +217,17 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white" style={{ 
+      background: `linear-gradient(to bottom, transparent, ${colors.backgroundEnd}) ${colors.background}`,
+      color: colors.text 
+    }}>
+      <ThemeToggle />
       <div className="container">
         <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white tracking-tight mb-2">
+          <h1 className="text-4xl font-bold tracking-tight mb-2" style={{ color: colors.text }}>
             Interactive Bubble Chart Creator
           </h1>
-          <p className="text-lg text-gray-400">
+          <p className="text-lg" style={{ color: colors.textSecondary }}>
             Create beautiful bubble charts with multiple dimensions and group colors. Click bubbles to edit!
           </p>
         </header>
@@ -265,10 +280,10 @@ export default function Home() {
 
         {/* Chart Configuration */}
         <div className="chart-container mb-6">
-          <h3 className="text-xl font-bold text-white mb-4">Chart Configuration</h3>
+          <h3 className="text-xl font-bold mb-4" style={{ color: colors.text }}>Chart Configuration</h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h4 className="text-lg font-semibold text-gray-300 mb-3">X Axis</h4>
+              <h4 className="text-lg font-semibold mb-3" style={{ color: colors.textSecondary }}>X Axis</h4>
               <div className="form-group">
                 <label>Label:</label>
                 <input
@@ -298,7 +313,7 @@ export default function Home() {
             </div>
 
             <div>
-              <h4 className="text-lg font-semibold text-gray-300 mb-3">Y Axis</h4>
+              <h4 className="text-lg font-semibold mb-3" style={{ color: colors.textSecondary }}>Y Axis</h4>
               <div className="form-group">
                 <label>Label:</label>
                 <input
@@ -330,7 +345,7 @@ export default function Home() {
 
           {/* Quadrant Labels Configuration */}
           <div className="mt-6">
-            <h4 className="text-lg font-semibold text-gray-300 mb-3">Quadrant Labels</h4>
+            <h4 className="text-lg font-semibold mb-3" style={{ color: colors.textSecondary }}>Quadrant Labels</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="form-group">
                 <label>Top Left:</label>
@@ -369,7 +384,7 @@ export default function Home() {
 
           {/* Quadrant Colors Configuration */}
           <div className="mt-6">
-            <h4 className="text-lg font-semibold text-gray-300 mb-3">Quadrant Colors (RGBA format)</h4>
+            <h4 className="text-lg font-semibold mb-3" style={{ color: colors.textSecondary }}>Quadrant Colors (RGBA format)</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="form-group">
                 <label>Top Left:</label>
@@ -408,14 +423,14 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div className="text-xs text-gray-400 mt-2">
+            <div className="text-xs mt-2" style={{ color: colors.textMuted }}>
               💡 Use RGBA format like "rgba(255, 0, 0, 0.1)" where the last number is opacity (0.0 to 1.0)
             </div>
           </div>
 
           {/* Chart Title Configuration */}
           <div className="mt-6">
-            <h4 className="text-lg font-semibold text-gray-300 mb-3">Chart Title</h4>
+            <h4 className="text-lg font-semibold mb-3" style={{ color: colors.textSecondary }}>Chart Title</h4>
             <div className="form-group">
               <label>Title:</label>
               <input
@@ -502,7 +517,7 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           {/* Groups List */}
           <div className="chart-container">
-            <h3 className="text-xl font-bold text-white mb-4">
+            <h3 className="text-xl font-bold mb-4" style={{ color: colors.text }}>
               Groups ({chartData.groups.length})
             </h3>
             {chartData.groups.map(group => (
@@ -536,7 +551,7 @@ export default function Home() {
 
           {/* Bubbles List */}
           <div className="chart-container">
-            <h3 className="text-xl font-bold text-white mb-4">
+            <h3 className="text-xl font-bold mb-4" style={{ color: colors.text }}>
               Bubbles ({chartData.bubbles.length})
             </h3>
             {chartData.bubbles.map(bubble => {
@@ -544,8 +559,8 @@ export default function Home() {
               return (
                 <div key={bubble.id} className="bubble-item slide-in">
                   <div className="bubble-info">
-                    <div className="font-medium text-white">{bubble.name}</div>
-                    <div className="text-sm text-gray-400 mt-1">
+                    <div className="font-medium" style={{ color: colors.text }}>{bubble.name}</div>
+                    <div className="text-sm mt-1" style={{ color: colors.textMuted }}>
                       {chartData.xAxis.label}: {bubble.x}, {chartData.yAxis.label}: {bubble.y}, Size: {bubble.size}
                     </div>
                     <div className="text-sm mt-1" style={{ color: group?.color }}>
@@ -577,8 +592,8 @@ export default function Home() {
         {/* Empty State */}
         {chartData.bubbles.length === 0 && (
           <div className="chart-container text-center py-16">
-            <h3 className="text-2xl font-bold text-white mb-4">No Bubbles Yet</h3>
-            <p className="text-gray-400 mb-6">Start by adding some groups and bubbles to create your chart!</p>
+            <h3 className="text-2xl font-bold mb-4" style={{ color: colors.text }}>No Bubbles Yet</h3>
+            <p className="mb-6" style={{ color: colors.textSecondary }}>Start by adding some groups and bubbles to create your chart!</p>
             <div className="flex gap-4 justify-center">
               <button 
                 className="btn btn-primary" 

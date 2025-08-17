@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import { ChartData, Bubble } from '../lib/types';
+import { useTheme, themeColors } from '../lib/theme';
 
 interface FullScreenChartProps {
   data: ChartData;
@@ -17,6 +18,8 @@ export default function FullScreenChart({
   onBubbleClick,
   onBubbleDrag
 }: FullScreenChartProps) {
+  const { theme } = useTheme();
+  const colors = themeColors[theme];
   const svgRef = useRef<SVGSVGElement>(null);
 
   // Get screen dimensions
@@ -73,7 +76,7 @@ export default function FullScreenChart({
       .attr('dx', '2')
       .attr('dy', '3')
       .attr('stdDeviation', '3')
-      .attr('flood-color', 'rgba(0, 0, 0, 0.3)');
+      .attr('flood-color', colors.shadowColor);
 
     // Add quadrant backgrounds
     const quadrantWidth = innerWidth / 2;
@@ -122,7 +125,7 @@ export default function FullScreenChart({
       .attr('dominant-baseline', 'middle')
       .style('font-size', '12px')
       .style('font-weight', '600')
-      .style('fill', '#e5e7eb')
+      .style('fill', colors.textSecondary)
       .text(data.quadrants.topLeft);
 
     // Top right quadrant (Strategic Projects) - positioned at top edge
@@ -133,7 +136,7 @@ export default function FullScreenChart({
       .attr('dominant-baseline', 'middle')
       .style('font-size', '12px')
       .style('font-weight', '600')
-      .style('fill', '#e5e7eb')
+      .style('fill', colors.textSecondary)
       .text(data.quadrants.topRight);
 
     // Bottom left quadrant (Daily Grind) - positioned at bottom edge
@@ -144,7 +147,7 @@ export default function FullScreenChart({
       .attr('dominant-baseline', 'middle')
       .style('font-size', '12px')
       .style('font-weight', '600')
-      .style('fill', '#e5e7eb')
+      .style('fill', colors.textSecondary)
       .text(data.quadrants.bottomLeft);
 
     // Bottom right quadrant (Specialized Tasks) - positioned at bottom edge
@@ -155,7 +158,7 @@ export default function FullScreenChart({
       .attr('dominant-baseline', 'middle')
       .style('font-size', '12px')
       .style('font-weight', '600')
-      .style('fill', '#e5e7eb')
+      .style('fill', colors.textSecondary)
       .text(data.quadrants.bottomRight);
 
     // Add X axis
@@ -163,7 +166,7 @@ export default function FullScreenChart({
     chart.append('g')
       .attr('transform', `translate(0, ${innerHeight})`)
       .call(xAxis)
-      .style('color', '#9ca3af');
+      .style('color', colors.textMuted);
 
     // Add X axis label
     chart.append('text')
@@ -172,14 +175,14 @@ export default function FullScreenChart({
       .style('text-anchor', 'middle')
       .style('font-size', '14px')
       .style('font-weight', 'bold')
-      .style('fill', '#9ca3af')
+      .style('fill', colors.textMuted)
       .text(data.xAxis.label);
 
     // Add Y axis
     const yAxis = d3.axisLeft(yScale);
     chart.append('g')
       .call(yAxis)
-      .style('color', '#9ca3af');
+      .style('color', colors.textMuted);
 
     // Add Y axis label
     chart.append('text')
@@ -189,7 +192,7 @@ export default function FullScreenChart({
       .style('text-anchor', 'middle')
       .style('font-size', '14px')
       .style('font-weight', 'bold')
-      .style('fill', '#9ca3af')
+      .style('fill', colors.textMuted)
       .text(data.yAxis.label);
 
     // Group bubbles by their group
@@ -218,7 +221,7 @@ export default function FullScreenChart({
         .attr('opacity', 0.7)
         .style('cursor', 'pointer')
         .style('filter', 'url(#bubble-shadow-fullscreen)')
-        .style('stroke', 'rgba(255, 255, 255, 0.1)')
+        .style('stroke', colors.strokeColor)
         .style('stroke-width', '1')
         .on('mouseover', function() {
           d3.select(this)
@@ -335,33 +338,45 @@ export default function FullScreenChart({
         .attr('text-anchor', 'middle')
         .style('font-size', '11px')
         .style('font-weight', '400')
-        .style('fill', '#9ca3af')
+        .style('fill', colors.textMuted)
         .style('pointer-events', 'none')
-        .style('text-shadow', '1px 1px 2px rgba(0,0,0,0.6)')
+        .style('text-shadow', theme === 'dark' ? '1px 1px 2px rgba(0,0,0,0.6)' : 'none')
         .text(d => d.name);
     });
 
   }, [data, chartWidth, chartHeight, onBubbleClick, onBubbleDrag]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-              <div className="bg-gray-900 rounded-lg border border-gray-600 max-w-full max-h-full overflow-auto">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{
+      backgroundColor: `rgba(0, 0, 0, 0.9)`
+    }}>
+      <div className="rounded-lg border max-w-full max-h-full overflow-auto" style={{
+        backgroundColor: colors.tileBackground,
+        borderColor: colors.border
+      }}>
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold text-white">
+            <h3 className="text-2xl font-bold" style={{ color: colors.text }}>
               {data.title}
             </h3>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => {
-                  const chartContainer = document.querySelector('.bg-gray-900.rounded-lg.border.border-gray-600') as HTMLElement;
+                  // Find the current fullscreen chart container
+                  const chartContainer = document.querySelector('.fixed.inset-0 .rounded-lg.border') as HTMLElement;
                   if (chartContainer) {
                     import('../lib/imageExport').then(({ exportFullScreenChartAsImage }) => {
                       exportFullScreenChartAsImage(chartContainer, data.title);
                     });
+                  } else {
+                    alert('Chart container not found for export.');
                   }
                 }}
-                className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center gap-2"
+                className="px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center gap-2 hover:opacity-80"
+                style={{
+                  backgroundColor: colors.border,
+                  color: colors.text
+                }}
                 title="Export as Image"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -371,14 +386,20 @@ export default function FullScreenChart({
               </button>
               <button 
                 onClick={onClose}
-                className="text-gray-400 hover:text-white text-2xl font-bold w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-700"
+                className="text-2xl font-bold w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition-opacity duration-200"
+                style={{
+                  color: colors.textSecondary
+                }}
               >
                 ×
               </button>
             </div>
           </div>
           
-          <div className="bg-gray-900 border border-gray-700 rounded-lg">
+          <div className="border rounded-lg" style={{
+            backgroundColor: colors.tileBackground,
+            borderColor: colors.border
+          }}>
             <svg
               ref={svgRef}
               width={chartWidth}
@@ -391,16 +412,18 @@ export default function FullScreenChart({
               {data.groups.map(group => (
                 <div key={group.id} className="flex items-center gap-2">
                   <div 
-                    className="w-4 h-4 rounded-full border-2 border-white"
-                    style={{ backgroundColor: group.color }}
+                    className="w-4 h-4 rounded-full"
+                    style={{ 
+                      backgroundColor: group.color
+                    }}
                   />
-                  <span className="text-sm font-medium text-gray-300">{group.name}</span>
+                  <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>{group.name}</span>
                 </div>
               ))}
             </div>
           </div>
           
-          <div className="mt-4 text-center text-gray-400 text-sm">
+          <div className="mt-4 text-center text-sm" style={{ color: colors.textMuted }}>
             💡 Press F11 for true full-screen mode, or use your browser's screenshot tool
           </div>
         </div>

@@ -1,9 +1,23 @@
 export const exportChartAsImage = (svgElement: SVGSVGElement, title: string, format: 'png' | 'jpeg' = 'png'): void => {
+  // Get current theme from localStorage
+  const currentTheme = localStorage.getItem('bubble-chart-theme') || 'dark';
+  const isDark = currentTheme === 'dark';
+  
   // Find the chart container instead of just the SVG
-  const chartContainer = svgElement.closest('.chart-container') as HTMLElement;
+  let chartContainer = svgElement.closest('.chart-container') as HTMLElement;
+  
+  // If we can't find it with closest, try to find it in the parent hierarchy
+  if (!chartContainer) {
+    chartContainer = svgElement.parentElement?.closest('.chart-container') as HTMLElement;
+  }
+  
+  // If still not found, try to find any chart container
+  if (!chartContainer) {
+    chartContainer = document.querySelector('.chart-container') as HTMLElement;
+  }
   
   if (!chartContainer) {
-    alert('Chart container not found');
+    alert('Chart container not found. Please make sure the chart is properly rendered.');
     return;
   }
 
@@ -25,7 +39,7 @@ export const exportChartAsImage = (svgElement: SVGSVGElement, title: string, for
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       font-size: 24px;
       font-weight: bold;
-      color: white;
+      color: ${isDark ? 'white' : 'black'};
       text-align: center;
       margin-bottom: 20px;
       padding: 0;
@@ -43,15 +57,15 @@ export const exportChartAsImage = (svgElement: SVGSVGElement, title: string, for
     exportContainer.style.minWidth = 'auto';
     exportContainer.style.margin = '0';
     exportContainer.style.padding = '20px';
-    exportContainer.style.backgroundColor = 'rgb(33, 33, 33)';
-    exportContainer.style.border = '1px solid rgb(75, 85, 99)';
+    exportContainer.style.backgroundColor = isDark ? 'rgb(33, 33, 33)' : 'rgb(255, 255, 255)';
+    exportContainer.style.border = isDark ? '1px solid rgb(75, 85, 99)' : '1px solid rgb(203, 213, 225)';
     exportContainer.style.borderRadius = '8px';
     
     // Add to document temporarily
     document.body.appendChild(exportContainer);
     
     html2canvas.default(exportContainer, {
-      backgroundColor: 'rgb(15, 15, 15)', // matches the new background
+      backgroundColor: isDark ? 'rgb(15, 15, 15)' : 'rgb(248, 250, 252)', // theme-aware background
       scale: 2, // Higher quality
       useCORS: true,
       allowTaint: true,
@@ -68,16 +82,16 @@ export const exportChartAsImage = (svgElement: SVGSVGElement, title: string, for
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
           }
           .chart-container {
-            background: rgb(33, 33, 33) !important;
-            border: 1px solid rgb(75, 85, 99) !important;
+            background: ${isDark ? 'rgb(33, 33, 33)' : 'rgb(255, 255, 255)'} !important;
+            border: 1px solid ${isDark ? 'rgb(75, 85, 99)' : 'rgb(203, 213, 225)'} !important;
           }
           body {
-            background: rgb(15, 15, 15) !important;
-            color: rgb(243, 244, 246) !important;
+            background: ${isDark ? 'rgb(15, 15, 15)' : 'rgb(248, 250, 252)'} !important;
+            color: ${isDark ? 'rgb(243, 244, 246)' : 'rgb(15, 23, 42)'} !important;
           }
           circle {
-            filter: drop-shadow(2px 3px 3px rgba(0, 0, 0, 0.3)) !important;
-            stroke: rgba(255, 255, 255, 0.1) !important;
+            filter: drop-shadow(2px 3px 3px ${isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.1)'}) !important;
+            stroke: ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'} !important;
             stroke-width: 1px !important;
           }
         `;
@@ -126,10 +140,13 @@ export const exportChartAsImage = (svgElement: SVGSVGElement, title: string, for
 };
 
 export const exportFullScreenChartAsImage = (chartContainer: HTMLElement, title: string, format: 'png' | 'jpeg' = 'png'): void => {
+  // Get current theme from localStorage
+  const currentTheme = localStorage.getItem('bubble-chart-theme') || 'dark';
+  const isDark = currentTheme === 'dark';
   // Use html2canvas for full-screen export
   import('html2canvas').then((html2canvas) => {
     html2canvas.default(chartContainer, {
-      backgroundColor: 'rgb(15, 15, 15)', // matches the new background
+      backgroundColor: isDark ? 'rgb(15, 15, 15)' : 'rgb(248, 250, 252)', // theme-aware background
       scale: 2, // Higher quality
       useCORS: true,
       allowTaint: true,

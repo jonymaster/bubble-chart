@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import { ChartData, Bubble } from '../lib/types';
+import { useTheme, themeColors } from '../lib/theme';
 
 interface BubbleChartProps {
   data: ChartData;
@@ -23,6 +24,8 @@ export default function BubbleChart({
   onFullScreen,
   onExportImage
 }: BubbleChartProps) {
+  const { theme } = useTheme();
+  const colors = themeColors[theme];
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
@@ -73,7 +76,7 @@ export default function BubbleChart({
       .attr('dx', '2')
       .attr('dy', '3')
       .attr('stdDeviation', '3')
-      .attr('flood-color', 'rgba(0, 0, 0, 0.3)');
+      .attr('flood-color', colors.shadowColor);
     
     // Add inner shadow filter for more depth
     const innerFilter = defs.append('filter')
@@ -152,7 +155,7 @@ export default function BubbleChart({
       .attr('dominant-baseline', 'middle')
       .style('font-size', '12px')
       .style('font-weight', '600')
-      .style('fill', '#e5e7eb')
+      .style('fill', colors.textSecondary)
       .style('font-family', 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif')
       .text(data.quadrants.topLeft);
 
@@ -164,7 +167,7 @@ export default function BubbleChart({
       .attr('dominant-baseline', 'middle')
       .style('font-size', '12px')
       .style('font-weight', '600')
-      .style('fill', '#e5e7eb')
+      .style('fill', colors.textSecondary)
       .style('font-family', 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif')
       .text(data.quadrants.topRight);
 
@@ -176,7 +179,7 @@ export default function BubbleChart({
       .attr('dominant-baseline', 'middle')
       .style('font-size', '12px')
       .style('font-weight', '600')
-      .style('fill', '#e5e7eb')
+      .style('fill', colors.textSecondary)
       .style('font-family', 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif')
       .text(data.quadrants.bottomLeft);
 
@@ -188,7 +191,7 @@ export default function BubbleChart({
       .attr('dominant-baseline', 'middle')
       .style('font-size', '12px')
       .style('font-weight', '600')
-      .style('fill', '#e5e7eb')
+      .style('fill', colors.textSecondary)
       .style('font-family', 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif')
       .text(data.quadrants.bottomRight);
 
@@ -197,7 +200,7 @@ export default function BubbleChart({
     chart.append('g')
       .attr('transform', `translate(0, ${chartHeight})`)
       .call(xAxis)
-      .style('color', '#9ca3af');
+      .style('color', colors.textMuted);
 
     // Add X axis label
     chart.append('text')
@@ -206,7 +209,7 @@ export default function BubbleChart({
       .style('text-anchor', 'middle')
       .style('font-size', '14px')
       .style('font-weight', 'bold')
-      .style('fill', '#9ca3af')
+      .style('fill', colors.textMuted)
       .style('font-family', 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif')
       .text(data.xAxis.label);
 
@@ -214,7 +217,7 @@ export default function BubbleChart({
     const yAxis = d3.axisLeft(yScale);
     chart.append('g')
       .call(yAxis)
-      .style('color', '#9ca3af');
+      .style('color', colors.textMuted);
 
     // Add Y axis label
     chart.append('text')
@@ -224,7 +227,7 @@ export default function BubbleChart({
       .style('text-anchor', 'middle')
       .style('font-size', '14px')
       .style('font-weight', 'bold')
-      .style('fill', '#9ca3af')
+      .style('fill', colors.textMuted)
       .style('font-family', 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif')
       .text(data.yAxis.label);
 
@@ -254,7 +257,7 @@ export default function BubbleChart({
         .attr('opacity', 0.7)
         .style('cursor', 'pointer')
         .style('filter', 'url(#bubble-shadow)')
-        .style('stroke', 'rgba(255, 255, 255, 0.1)')
+        .style('stroke', colors.strokeColor)
         .style('stroke-width', '1')
         .on('mouseover', function() {
           d3.select(this)
@@ -399,9 +402,9 @@ export default function BubbleChart({
         .attr('text-anchor', 'middle')
         .style('font-size', '11px')
         .style('font-weight', '400')
-        .style('fill', '#9ca3af')
+        .style('fill', colors.textMuted)
         .style('pointer-events', 'none')
-        .style('text-shadow', '1px 1px 2px rgba(0,0,0,0.6)')
+        .style('text-shadow', theme === 'dark' ? '1px 1px 2px rgba(0,0,0,0.6)' : 'none')
         .style('font-family', 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif')
         .text(d => d.name);
     });
@@ -409,7 +412,10 @@ export default function BubbleChart({
   }, [data, width, height, onBubbleClick]);
 
   return (
-            <div className="chart-container bg-gray-900 border border-gray-700 relative">
+            <div className="chart-container relative" style={{ 
+              backgroundColor: colors.tileBackground,
+              border: `1px solid ${colors.border}`
+            }}>
       <svg
         ref={svgRef}
         width={width}
@@ -422,10 +428,12 @@ export default function BubbleChart({
         {data.groups.map(group => (
           <div key={group.id} className="flex items-center gap-2">
             <div 
-              className="w-4 h-4 rounded-full border-2 border-white"
-              style={{ backgroundColor: group.color }}
+              className="w-4 h-4 rounded-full"
+              style={{ 
+                backgroundColor: group.color
+              }}
             />
-            <span className="text-sm font-medium text-gray-300">{group.name}</span>
+            <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>{group.name}</span>
           </div>
         ))}
       </div>
@@ -435,7 +443,11 @@ export default function BubbleChart({
         {onExportImage && (
           <button
             onClick={onExportImage}
-            className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center gap-2 text-sm"
+            className="px-3 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center gap-2 text-sm hover:opacity-80"
+            style={{
+              backgroundColor: colors.border,
+              color: colors.text
+            }}
             title="Export as Image"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -448,7 +460,11 @@ export default function BubbleChart({
         {onFullScreen && (
           <button
             onClick={onFullScreen}
-            className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center gap-2 text-sm"
+            className="px-3 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center gap-2 text-sm hover:opacity-80"
+            style={{
+              backgroundColor: colors.border,
+              color: colors.text
+            }}
             title="Full Screen"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
